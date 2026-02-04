@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>VPN Demo GUI</title></head>
+<body>
+<h2>VPN Demo Controls</h2>
+<div>
+  <button onclick="doAction('start','server')">Start Server</button>
+  <button onclick="doAction('stop','server')">Stop Server</button>
+  <button onclick="doAction('start','client')">Start Client</button>
+  <button onclick="doAction('stop','client')">Stop Client</button>
+</div>
+
+<h3>Server Log</h3>
+<pre id="server_log" style="height:200px; overflow:auto; background:#111; color:#cfc;"></pre>
+<h3>Client Log</h3>
+<pre id="client_log" style="height:200px; overflow:auto; background:#111; color:#cfc;"></pre>
+
+<script>
+function doAction(action,target){
+  fetch('/action', {method:'POST', body: new URLSearchParams({action:action, target:target})})
+    .then(r=>r.json()).then(j=>alert(JSON.stringify(j)));
+}
+function refreshLogs(){
+  fetch('/action', {method:'POST', body: new URLSearchParams({action:'log', target:'server'})})
+    .then(r=>r.json()).then(j=>document.getElementById('server_log').textContent=j.log);
+  fetch('/action', {method:'POST', body: new URLSearchParams({action:'log', target:'client'})})
+    .then(r=>r.json()).then(j=>document.getElementById('client_log').textContent=j.log);
+}
+setInterval(refreshLogs,1500);
+refreshLogs();
+</script>
+</body>
+</html>
+
